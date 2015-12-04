@@ -23,7 +23,6 @@
 		}
 		
 		$query = $db->query("SELECT *FROM tbl_meter_profile WHERE cid = '$cid' AND appId = '$appId'");
-		
 		if($query->rowCount() > 0){
 			$update = $db->prepare("UPDATE tbl_meter_profile SET mReading = ?, mBrand = ?, mClass = ?, mSerial = ?, mERC = ?, mLabSeal = ?, mTerminal = ?, multiplier = ? WHERE cid = ? AND appId = ?");
 			$update->execute(array($mReading, $mBrand, $mClass, $mSerial, $mERC, $mLabSeal, $mTerminal, $multiplier, $cid, $appId));

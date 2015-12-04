@@ -26,7 +26,7 @@
 		$date = $_POST["date"];
 		$cid = $_POST["cid"];
 		$appId = $_POST["appId"];
-		
+		$cType = $_POST["cType"];
 		$i = 1;
 		$status = 2;
 		
@@ -55,18 +55,18 @@
 			}
 		}
 		
-		$inspection_data = array($i, $appId, $cid, $inspectedBy, $iRemarks,	$date);
+		$inspection_data = array($i, $appId, $cid, $cType, $inspectedBy, $iRemarks,	$date);
 		$type_data = array($i, $pType, $rating, $wSize, $etype, $eSize, $length, $servicePole);
 		$meter_data = array($i, $meter, $mClass, $totalVa, $station, $feeder, $phase);
 		$update_data = array(1, $id, date("Y-m-d H:i:s"), $iRemarks, $transaction_id);
-		$trans_data = array($t, $appId, $cid, $status, $processed, date("Y-m-d H:i:s"));
+		$trans_data = array($t, $appId, $cid, $status, $processed, date("Y-m-d H:i:s"), $iRemarks);
 		try{
 			$db->beginTransaction();
 			
 			$inspection = $db->prepare("INSERT INTO tbl_inspection 
-										(inspectionId, appId, cid, inspectedBy, iRemarks, dateInspected)
+										(inspectionId, appId, cid, cType, inspectedBy, iRemarks, dateInspected)
 										VALUES
-										(?, ?, ?, ?, ?, ?)");
+										(?, ?, ?, ?, ?, ?, ?)");
 			$inspection->execute($inspection_data);
 			
 			$type = $db->prepare("INSERT INTO tbl_inspection_type
@@ -85,9 +85,9 @@
 			$update->execute($update_data);
 
 			$insert = $db->prepare("INSERT INTO tbl_transactions 
-									(tid, appId, cid, status, processedBy, dateProcessed)
+									(tid, appId, cid, status, processedBy, dateProcessed, remarks)
 									VALUES
-									(?, ?, ?, ?, ?, ?)");
+									(?, ?, ?, ?, ?, ?, ?)");
 			$insert->execute($trans_data);
 			
 			echo "1";

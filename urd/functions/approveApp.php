@@ -13,8 +13,20 @@
 		$update = $db->prepare("UPDATE tbl_transactions SET action = ? WHERE tid = ? AND status = ?");
 		$update->execute(array(1, $tid, 8));
 		
-		$update = $db->prepare("UPDATE tbl_temp_consumers SET flag = ? WHERE AccountNumber = ?");
+		$update = $db->prepare("UPDATE tbl_temp_consumers SET flag = ? WHERE AccountNumberT = ?");
 		$update->execute(array(1, $account));
+	}
+	
+	function updateMeter($account, $db, $meter){
+		$cm = $db->prepare("UPDATE consumers SET MeterNumber = ? WHERE AccountNumber = ?");
+		$cm->execute(array(1, $meter, $account));
+	}
+	
+	function getConsumer($db, $account){
+		$query = $db->query("SELECT * FROM consumers WHERE AccountNumber = '$account'");
+		$r = $query->fetch(PDO::FETCH_ASSOC);
+		
+		return $r["MeterNumber"];
 	}
 	
 	if(isset($_POST["acctNo"])){
@@ -26,24 +38,37 @@
 							WHERE a.AccountNumberT = '$acctNo' ORDER BY tid DESC LIMIT 1");
 		
 		$row = $query->fetchAll(PDO::FETCH_ASSOC);
-		if($type == "NC"){
-			$insert = $db->prepare("INSERT INTO consumers (Accountaccountber, AccountName, Address, Barangay, Branch, Municipality, CustomerType, bapa, Status, Multiplier)
-									VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			$insert->execute(array($row[0]["AccountNumberT"], $row[0]["AccountNameT"], $row[0]["AddressT"], 
-								   $row[0]["BarangayT"], $row[0]["BranchT"], $row[0]["MunicipalityT"], 
-								   $row[0]["CustomerTypeT"], ($row[0]["bapaT"] == 0 ? "NO" : "YES"), "A", $row[0]["multiplier"]));
-			updateTransaction($acctNo, $row[0]["tid"]);
-			
-		} else if($type == "RC"){
-			reconnect($acctNo, $db);
-			updateTransaction($acctNo, $row[0]["tid"], $db);
-		} 
-		else if($type == "RCCM"){
-			reconnect($acctNo, $db);
-			updateTransaction($acctNo, $row[0]["tid"], $db);
-			// $insert = $db->prepare("INSERT INTO tbl_meter_profile (appId, cid, AccountNumber, mReading, mBrand, mClass, mSerial, mERC, mLabSeal, mTerminal, multiplier)
-									// VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			// $insert->execute(array($row[0]["appId"], $row[0]["cid"], $row[0]["AccountNumberT"], $row[0][""], $row[0][""], $row[0][""], $row[0][""], $row[0][""], $row[0][""], $row[0][""], $row[0][""], ))
-		}
+		
+		$query2 = $db->query("SELECT *FROM tbl_meter_profile WHERE AccountNumber = '$acctNo' AND currentMeter = '1'");
+		$row2 = $query2->fetchAll(PDO::FETCH_ASSOC);
+		echo $row[0]["tid"]." ";
+		echo $row[0]["mSerial"]." ";
+		echo $row2[0]["mSerial"];
+		// try{
+			// $db->beginTransacation();
+			// if($type == "NC"){
+				// $insert = $db->prepare("INSERT INTO consumers (AccountNumber, AccountName, Address, Barangay, Branch, Municipality, CustomerType, bapa, Status, Multiplier, MeterNumber)
+										// VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				// $insert->execute(array($row[0]["AccountNumberT"], $row[0]["AccountNameT"], $row[0]["AddressT"], 
+									   // $row[0]["BarangayT"], $row[0]["BranchT"], $row[0]["MunicipalityT"], 
+									   // $row[0]["CustomerTypeT"], ($row[0]["bapaT"] == 0 ? "NO" : "YES"), "A", $row[0]["multiplier"], $row["mSerial"]));
+				// updateTransaction($acctNo, $row[0]["tid"], $db);
+				
+			// } else if($type == "RC"){
+				// reconnect($acctNo, $db);
+				// updateTransaction($acctNo, $row[0]["tid"], $db);
+			// } else if($type == "RCCM"){
+				// reconnect($acctNo, $db);
+				// updateMeter($acctNo, $db, $row[0]["mSerial"]);
+				// updateTransaction($acctNo, $row[0]["tid"], $db);
+			// } else if($type == "CM"){
+				// updateMeter($acctNo, $db, $row[0]["mSerial"]);
+				// updateTransaction($acctNo, $row[0]["tid"], $db);
+			// }
+			// $db->commit();
+			// echo "1";
+		// } catch(PDOException $e){
+			// $db->rollBack();
+		// }
 	}
 ?>

@@ -7,9 +7,9 @@
 	$area = $_SESSION["area"];
 	$customers = Array();
 	
-	if($area == 1)
-		$query = $db->query("SELECT *FROM tbl_municipality WHERE branch = '$branch'");
-	else
+	// if($area == 1)
+		// $query = $db->query("SELECT *FROM tbl_municipality WHERE branch = '$branch'");
+	// else
 		$query = $db->query("SELECT *FROM tbl_municipality WHERE branch = '$branch' AND area = '$area'");
 	
 	foreach($query as $r){

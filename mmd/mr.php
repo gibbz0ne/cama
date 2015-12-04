@@ -36,6 +36,36 @@ $include = new includes();
 				{ size: "50%",collapsible: false }] 
 			});
 			
+			var mBrand = {
+				datatype: "json",
+				dataFields: [
+					{name: "brandName"}
+				],
+				url: "sources/getMBrand.php",
+				async: false
+			};
+			
+			var brandData = new $.jqx.dataAdapter(mBrand);
+			$("#mBrand").jqxComboBox({
+				source: brandData, selectedIndex: 0, height: 20, displayMember: "brandName", 
+				valueMember: "brandName", theme: "main-theme"
+			});
+			
+			var mClass = {
+				datatype: "json",
+				dataFields: [
+					{name: "className"}
+				],
+				url: "sources/getMClass.php",
+				async: false
+			};
+			
+			var classData = new $.jqx.dataAdapter(mClass);
+			$("#mClass").jqxComboBox({
+				source: classData, selectedIndex: 0, height: 20, displayMember: "className", 
+				valueMember: "className", theme: "main-theme"
+			});
+			
 			var initrowdetails = function (index, parentElement, gridElement, datarecord) {
 				var tabsdiv = null;
 				var information = null;
@@ -262,14 +292,14 @@ $include = new includes();
 								$("#meterForm").jqxWindow("open");
 								$("#consumerData").html(
 									"Primary Account No: "+data.acctNo+"<br>Consumer Name: "+data.consumerName+"<br>Addresss: "+data.address);
-								$("#meterForm input")[0].value = data.mReading;
-								$("#meterForm input")[1].value = data.mBrand;
-								$("#meterForm input")[2].value = data.mClass;
-								$("#meterForm input")[3].value = data.mSerial;
-								$("#meterForm input")[4].value = data.mERC;
-								$("#meterForm input")[5].value = data.mLabSeal;
-								$("#meterForm input")[6].value = data.mTerminal;
-								$("#meterForm input")[7].value = data.multiplier;
+								$("#mReading").val(data.mReading);
+								$("#mBrand").val(data.mBrand);
+								$("#mClass").val(data.mClass);
+								$("#mSerial").val(data.mSerial);
+								$("#mERC").val(data.mERC);
+								$("#mLabSeal").val(data.mLabSeal);
+								$("#mTerminal").val(data.mTerminal);
+								$("#mMultiplier").val(data.multiplier);
 							}
 						});
 					});
@@ -391,11 +421,11 @@ $include = new includes();
 					</tr>
 					<tr>
 						<td>BRAND</td>
-						<td><input type = "text" id = "mBrand" class = "form-control"></td>
+						<td><div id = "mBrand" class = "form-control"></div></td>
 					</tr>
 					<tr>
 						<td>CLASS/AMPERES</td>
-						<td><input type = "text" id = "mClass" class = "form-control"></td>
+						<td><div id = "mClass" class = "form-control"></div></td>
 					</tr>
 					<tr>
 						<td>SERIAL NO.</td>

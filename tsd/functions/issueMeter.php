@@ -23,14 +23,9 @@
 											WHERE cid = ? and appId = ?");
 			$profile_update->execute(array($mReading, $mBrand, $mClass, $mSerial, $mERC, $mLabSeal, $mTerminal, $multiplier, $cid, $appId));
 		}else{
-			$insert = $db->prepare("INSERT INTO tbl_meter (entry_id) VALUES (?)");
-			$insert->execute(array(""));
-			
-			$mid = $db->lastInsertId();
-			
-			$profile = $db->prepare("INSERT INTO tbl_meter_profile (mid, appId, cid, mReading, mBrand, mClass, mSerial, mERC, mLabSeal, mTerminal, multiplier)
-									VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			$profile->execute(array($mid, $appId, $cid, $mReading, $mBrand, $mClass, $mSerial, $mERC, $mLabSeal, $mTerminal, $multiplier));
+			$profile = $db->prepare("INSERT INTO tbl_meter_profile (appId, cid, mReading, mBrand, mClass, mSerial, mERC, mLabSeal, mTerminal, multiplier)
+									VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			$profile->execute(array($appId, $cid, $mReading, $mBrand, $mClass, $mSerial, $mERC, $mLabSeal, $mTerminal, $multiplier));
 		}
 		echo "1";
 	}

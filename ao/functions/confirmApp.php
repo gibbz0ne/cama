@@ -14,6 +14,7 @@
 			$update = $db->prepare("UPDATE tbl_transactions SET action = ?, approvedBy = ?, dateApproved = ? WHERE appId = ? AND status = ?");
 			$update->execute(array(1, $userId, date("Y-m-d H:i:s"), $appId, 8));
 			
+			echo "1";
 			$db->commit();
 		} catch(PDOException $e){
 			$db->rollBack();

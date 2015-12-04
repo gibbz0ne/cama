@@ -10,7 +10,7 @@
 							LEFT OUTER JOIN tbl_applications b ON a.cid = b.cid 
 							LEFT OUTER JOIN tbl_transactions c ON b.appId = c.appId 
 							LEFT OUTER JOIN tbl_status d ON c.status = d.statId 
-							WHERE b.appSOnum is NULL AND c.processedBy = $id AND c.status = 2 OR c.status = 8 AND c.action = 0 
+							WHERE b.appSOnum is NULL AND c.processedBy = $id AND c.status = 2 AND c.action = 0 
 							ORDER BY b.appDate Desc");
 	
 	$list = Array();

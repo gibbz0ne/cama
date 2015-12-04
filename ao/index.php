@@ -101,7 +101,7 @@ $include = new includes();
 				showtoolbar: true,
 				altrows: true,
 				// pageable: true,
-				// filterable: true, 
+				filterable: true, 
 				columnsresize: true,
 				columns: [
 					{text: "Account Number", dataField: "acctNo", width: 200},
@@ -566,7 +566,16 @@ $include = new includes();
 							autoDropDownHeight: 200, selectedIndex: 0, width: "91%", height: 16, 
 							source: ["NON-BAPA", "BAPA"], theme:'main-theme'
 						});
-
+						
+						$("#isTemp").on("change", function(event){
+							if ($('#isTemp').is(':checked'))
+								$("#tempDate").prop("disabled", false);
+							else{
+								$("#tempDate").prop("disabled", true);
+								$("#tempDate").val("");
+							}
+						});
+												
 						$("#civilStatus").jqxDropDownList({
 							autoDropDownHeight: 200, selectedIndex: 0, width: "91%", height: 20, 
 							source: cStatusList, theme:'main-theme'
@@ -606,7 +615,7 @@ $include = new includes();
 				$.ajax({
 					url: "functions/addApplicationExisting.php",
 					type: "post",
-					data: {type: item.value, cid: data.cid},
+					data: {type: item.value, acctNo: data.acctNo},
 					success: function(data){
 						if(data == 1){
 							$("#processing").jqxWindow("open");

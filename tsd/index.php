@@ -481,6 +481,7 @@
 					height: "100%",
 					source: mrAdapter,
 					rowdetails: true,
+					pageable: true,
 					rowdetailstemplate: { rowdetails: "<div style='margin: 10px;'><ul style='margin-left: 30px;'><li class='title'></li><li>Work Order Lists</li></ul><div class='information'></div><div class='notes'></div></div>", rowdetailsheight: 200 },
 					initrowdetails: initrowdetails,
 					columns: [

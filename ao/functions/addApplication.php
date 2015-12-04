@@ -4,7 +4,11 @@
 	$id = $_SESSION["userId"];
 	$con = new getConnection();
 	$db = $con->PDO();
-	$branch = $_SESSION["branch"];
+	$branch = $codeB = $_SESSION["branch"];
+	$area = $codeA = $_SESSION["area"];
+	$codeB[0] = "0";
+	$codeA[0] = "0";
+	$code = $codeB.$codeA."-".date("y-m");
 	include "../../class/accountNum.class.php";
 	$processNext = new getNextNum();
 	$user = $_SESSION["username"];
@@ -39,7 +43,23 @@
 		$mname = ($mname == "" ? "" : " ".$mname[0].".");
 		$hno = ($hno == "" ? "" : $hno);
 		$purok = ($purok == "" ? "" : $purok);
+		$serviceType = $car = 1;
+		$tempDate = "0000-00-00";
+		if(isset($_POST["isTemp"])){
+			$tempDate = $_POST["tempDate"];
+			$serviceType = 4;
+		}
 		
+		$query = $db->query("SELECT *FROM tbl_applications WHERE appCAR LIKE '%$code%' ORDER BY appCAR DESC LIMIT 1");
+		if($query->rowCount() > 0){
+			foreach($query as $row){
+				$e = explode("-", $row["appCAR"]);
+				$incr = intval($e[2]+1);
+				$car = $e[0]."-".$e[1]."-".$incr;
+			}
+		} else
+			$car = $code."0001";
+
 		$query = $db->query("SELECT *FROM tbl_municipality WHERE munId = '$municipality'");
 		foreach($query as $row)
 			$municipality = $row["munDesc"];
@@ -80,6 +100,8 @@
 			}
 		} 
 		
+		
+		
 		$transaction = $db->query("SELECT * FROM tbl_transactions WHERE tid LIKE '%$user-".date("y")."%'ORDER BY tid DESC LIMIT 1");
 		if($transaction->rowCount() > 0){
 			foreach($transaction as $row){
@@ -94,15 +116,15 @@
 			
 			$insertC = $db->prepare("INSERT INTO tbl_temp_consumers (cid, AccountNameT, MiddleName, AddressT, BarangayT, BranchT, MunicipalityT, CustomerTypeT, bapaT, bookT)
 									 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			$insertC->execute(array($cid, $lname." ".$fname.$mname, $middle, $hno." ".$purok." ".$brgy." ".$municipality, $brgy, $branch, $municipality, $customerType, $isBapa, $book));
+			$insertC->execute(array($cid, $lname." ".$fname.$mname." ".$ename, $middle, $hno." ".$purok." ".$brgy." ".$municipality, $brgy, $branch, $municipality, $customerType, $isBapa, $book));
 			
-			$app = $db->prepare("INSERT INTO tbl_applications (appId, cid, appDate)
-								 VALUES (?, ?, ?)");
-			$app->execute(array($appId, $cid, date("Y-m-d H:i:s")));
+			$app = $db->prepare("INSERT INTO tbl_applications (appId, cid, appDate, appCAR, dateCAR)
+								 VALUES (?, ?, ?, ?, ?)");
+			$app->execute(array($appId, $cid, date("Y-m-d H:i:s"), $car, date("Y-m-d H:i:s")));
 				
 			$transactions = $db->prepare("INSERT INTO tbl_transactions(tid, appId, cid, status, processedBy, dateProcessed, remarks)
 										VALUES (?, ?, ?, ?, ?, ?, ?)");
-			$transactions->execute(array($tid, $appId, $cid, 1, $id, date("Y-m-d")." ".date("H:i:s"), $remarks));
+			$transactions->execute(array($tid, $appId, $cid, $serviceType, $id, date("Y-m-d")." ".date("H:i:s"), $remarks));
 			
 			$insertR = $db->prepare("INSERT INTO tbl_consumer_relation (cid, relationName, relationStatus) VALUES (?, ?, ?)");
 			$insertR->execute(array($cid, $spouseName, $civilStatus));
@@ -114,6 +136,9 @@
 			$insert = $db->prepare("INSERT INTO tbl_app_service (appId, serviceId) 
 											 VALUES(?, ?)");
 			$insert->execute(array($appId, 1));
+			
+			$contact = $db->prepare("INSERT INTO tbl_consumer_contact(cid, contactNo, contactEmail) VALUES (?, ?, ?)");
+			$contact->execute(array($cid, $phone, $email));
 		
 			$db->commit();
 			echo true;

@@ -59,7 +59,16 @@ $include = new includes();
 						</tr>
 						<tr>
 							<td class = "text-center"><input type = "text" id = "rating" placeholder = "Rating" class = "form-control"></td>
-							<td class = "text-center" colspan = "2"><input type = "text" id = "servicePole" placeholder = "No. of Service Pole" class = "form-control"></div></td>
+							<td class = "text-center" colspan = "1"><input type = "text" id = "servicePole" placeholder = "No. of Service Pole" class = "form-control"></div></td>
+							<td class = "text-center" colspan = "1">
+								<select id = "cType" class = "form-control">
+									<option value = "R">R</option>
+									<option value = "C">C</option>
+									<option value = "E">E</option>
+									<option value = "F">F</option>
+									<option value = "H">H</option>
+								</select>
+							</td>
 							<td class = "text-center" colspan = "2"><input type = "text" id = "length" placeholder = "Length" class = "form-control"></td>
 						</tr>
 						<tr>	
@@ -68,12 +77,12 @@ $include = new includes();
 						<tr>
 							<td colspan = "1"><input type = "text" id = "totalVa" class = "form-control" placeholder = "TOTAL VA"></td>
 							<td colspan = "2"><input type = "text" id = "meter" class = "form-control" placeholder = "METER FORM"></td>
-							<td colspan = "2"><input type = "text" id = "mClass" class = "form-control" placeholder = "CLASS"></td>
+							<td colspan = "2"><div id = "mClass" class = "form-control"></div></td>
 						</tr>
 						<tr>
 							<td colspan = "1"><div id = "substation" class = "form-control"></div></td>
 							<td colspan = "2"><div id = "feeder" class = "form-control"></div></td>
-							<td colspan = "2"><input type = "text" id = "phase" class = "form-control" placeholder = "PHASE"></td>
+							<td colspan = "2"><div id = "phase" class = "form-control"></div></td>
 						</tr>
 						<tr>
 							<td colspan = "5" class = "text-center"><h5>INSPECTED BY:</h5></td>
@@ -85,10 +94,10 @@ $include = new includes();
 						</tr>
 					</table>
 					<div style = "margin-top: 10px;" class = "col-sm-6">
-						<input type = "button" class = "btn btn-success btn-block" value = "Approve" id = "approveApp">
+						<button class = "btn btn-success btn-block" id = "approveApp">Approve</button>
 					</div>
 					<div style = "margin-top: 10px;" class = "col-sm-6">
-						<input type = "button" class = "btn btn-danger btn-block cancelApp" value = "Cancel">
+						<button class = "btn btn-danger btn-block cancelApp">Cancel</button>
 					</div>
 				</div>
 			</div>
@@ -100,10 +109,10 @@ $include = new includes();
 					<h5>Remarks:</h5>
 					<input type = "text" id = "remarks1" style = "margin-top: 10px;" class = "form-control" placeholder = "Remarks">
 					<div style = "margin-top: 10px;" class = "col-sm-6">
-						<input type = "button" class = "form-control btn btn-success" value = "Confirm" id = "approveApp1">
+						<button class = "form-control btn btn-success" id = "approveApp1">Confirm</button>
 					</div>
 					<div style = "margin-top: 10px;" class = "col-sm-6">
-						<input type = "button" class = "form-control btn btn-danger cancelApp1" value = "Cancel" id="cancelC">
+						<button class = "form-control btn btn-danger cancelApp1" id="cancelC">Cancel</button>
 					</div>
 				</div>
 			</div>

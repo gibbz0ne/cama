@@ -23,7 +23,7 @@ $include = new includes();
 		
 		<script>
 		$(document).ready(function(){
-			var mr = "";
+			var mr = type = "";
 			$("#dateInstalled").jqxDateTimeInput({ height: 10, width: '67%',  formatString: 'yyyy-MM-dd'});
 			$("#jqxMenu").jqxMenu({width: window.innerWidth-5, theme: "main-theme"});
 			
@@ -37,6 +37,36 @@ $include = new includes();
 				orientation: "horizontal",
 				panels: [{ size:"50%",collapsible:false  }, 
 				{ size: "50%",collapsible: false }] 
+			});
+			
+			var mBrand = {
+				datatype: "json",
+				dataFields: [
+					{name: "brandName"}
+				],
+				url: "sources/getMBrand.php",
+				async: false
+			};
+			
+			var brandData = new $.jqx.dataAdapter(mBrand);
+			$("#mBrand").jqxDropDownList({
+				source: brandData, selectedIndex: 0, height: 20, displayMember: "brandName", 
+				valueMember: "brandName", theme: "main-theme"
+			});
+			
+			var mClass = {
+				datatype: "json",
+				dataFields: [
+					{name: "className"}
+				],
+				url: "sources/getMClass.php",
+				async: false
+			};
+			
+			var classData = new $.jqx.dataAdapter(mClass);
+			$("#mClass").jqxDropDownList({
+				source: classData, selectedIndex: 0, height: 20, displayMember: "className", 
+				valueMember: "className", theme: "main-theme"
 			});
 			
 			var initrowdetails = function (index, parentElement, gridElement, datarecord) {
@@ -128,6 +158,7 @@ $include = new includes();
 					{ name: "meterNo"},
 					{ name: "cid"},
 					{ name: "appId"},
+					{ name: "tid"},
 					{ name: "mReading"},
 					{ name: "mBrand"},
 					{ name: "mClass"},
@@ -136,6 +167,14 @@ $include = new includes();
 					{ name: "mLabSeal"},
 					{ name: "mTerminal"},
 					{ name: "multiplier"},
+					{ name: "omReading"},
+					{ name: "omBrand"},
+					{ name: "omClass"},
+					{ name: "omSerial"},
+					{ name: "omERC"},
+					{ name: "omLabSeal"},
+					{ name: "omTerminal"},
+					{ name: "omultiplier"}
 				]
 			}
 			
@@ -199,6 +238,7 @@ $include = new includes();
 				theme: "main-theme",
 				selectionmode: "singlerow",
 				showtoolbar: true,
+				columnsresize: true,
 				rendertoolbar: function(toolbar){
 					var container = $("<div style='margin: 5px;'></div>");
 					toolbar.append(container);
@@ -212,6 +252,7 @@ $include = new includes();
 				ready: function(){
 					$("#consumerList").jqxGrid("hidecolumn", "cid");
 					$("#consumerList").jqxGrid("hidecolumn", "appId");
+					$("#consumerList").jqxGrid("hidecolumn", "tid");
 				},
 				columns: [
 					  { text: "#", datafield: "ctr1", pinned: true, align: "center", cellsalign: "center", width: 50 },
@@ -227,7 +268,16 @@ $include = new includes();
 					  { text: "Meter Lab Seal", datafield: "mLabSeal", align: "center", cellsalign: "center",width: 100},
 					  { text: "Terminal Seal", datafield: "mTerminal", align: "center", cellsalign: "center",width: 100},
 					  { text: "Multiplier", datafield: "multiplier", align: "center", cellsalign: "center",width: 100},
-					  { text: "CID", datafield: "cid", align: "center", cellsalign: "center"}
+					  { text: "Old Reading", datafield: "omReading", align: "center", cellsalign: "center",width: 100},
+					  { text: "Old Brand", datafield: "omBrand", align: "center", cellsalign: "center",width: 100},
+					  { text: "Old Meter Type", datafield: "omClass", align: "center", cellsalign: "center",width: 100},
+					  { text: "Old Meter Serial", datafield: "omSerial", align: "center", cellsalign: "center",width: 100},
+					  { text: "Old ERC Serial", datafield: "omERC", align: "center", cellsalign: "center",width: 100},
+					  { text: "Old Meter Lab Seal", datafield: "omLabSeal", align: "center", cellsalign: "center",width: 100},
+					  { text: "Old Terminal Seal", datafield: "omTerminal", align: "center", cellsalign: "center",width: 100},
+					  { text: "Old Multiplier", datafield: "omultiplier", align: "center", cellsalign: "center",width: 100},
+					  { text: "CID", datafield: "cid", align: "center", cellsalign: "center"},
+					  { text: "TID", datafield: "tid", align: "center", cellsalign: "center"},
 				  ]
 			});
 			
@@ -240,9 +290,13 @@ $include = new includes();
 					type: "post",
 					data: {cid: cid, appId: appId},
 					success: function(data){
-						if(data == "1")
+						if(data == "1"){
 							$("#install").jqxButton({disabled: false});
-						else
+							type = "";
+						} else if(data == "2"){
+							$("#install").jqxButton({disabled: false});
+							type = 1;
+						}else
 							$("#install").jqxButton({disabled: true});
 					}
 				});
@@ -307,7 +361,7 @@ $include = new includes();
 			});
 			
 			$("#confirm").click(function(){
-				$("#confirmModal").jqxWindow("open")
+				$("#confirmModal2").jqxWindow("open");
 			});
 			
 			$("#print_window").jqxWindow({
@@ -320,34 +374,75 @@ $include = new includes();
 			
 			$("#install").click(function(){
 				var rows = $("#consumerList").jqxGrid("getselectedrowindexes");
-				console.log(rows.length);
-				if(rows.length > 0) $("#confirmModal2").jqxWindow("open");
-				else alert("No selected consumer");
-				
+				var data = $("#consumerList").jqxGrid("getrowdata", rows);
+				$.ajax({
+					url: "sources/getConsumerWo.php",
+					type: "post",
+					dataType: "json",
+					data: {cid: data.cid},
+					success: function(data){
+						$("#consumerData").html(
+							"Primary Account No: "+data.acctNo+"<br>Consumer Name: "+data.consumerName+"<br>Addresss: "+data.address);
+					}
+				});
+				if(type == 1){
+					$("#meterForm").jqxWindow("open");
+				} else{
+					$("#confirmModal2").jqxWindow("open")
+				}
 			});
 			
+			$("#meterForm").on("close", function(){
+				$("#meterForm input").val("");
+			})			
 			$("#confirm4").click(function(){
-				var rows = $("#consumerList").jqxGrid("getselectedrowindexes");
+				var rows = $("#consumerList").jqxGrid("getselectedrowindex");
+				var data = $("#consumerList").jqxGrid("getrowdata", rows);
 				console.log(data);
-				for(var i = 0; rows.length>i; i++){
-					var data = $("#consumerList").jqxGrid("getrowdata", rows[i]);
+				if(type == 1){
+					var selClass = $("#mClass").jqxDropDownList("getSelectedItem");
+					var selBrand = $("#mBrand").jqxDropDownList("getSelectedItem");
 					$.ajax({
-						url: "functions/installMeter.php",
+						url: "functions/installMeter2.php",
 						type: "post",
-						data: {acctNo: data.acctNo, date: $("#dateInstalled").val(), accomplishedBy: $("#accomplishedBy").val()},
+						data: {
+							tid: data.tid, appId: data.appId, cid: data.cid, acctNo: data.acctNo, date: $("#dateInstalled").val(), 
+							accomplishedBy: $("#accomplishedBy").val(), mReading: $("#mReading").val(), mBrand: selBrand.value,
+							mClass: selClass.value, mSerial: $("#mSerial").val(), mERC: $("#mERC").val(), 
+							mLabSeal: $("#mLabSeal").val(), mTerminal: $("#mTerminal").val(), multiplier: $("#mMultiplier").val(),
+						},
 						success: function(result){
 							if(result == 1){
 								consumerList.url = 'sources/getConsumerWo.php?mr='+mrNo;
-								// selected_account = data.acctNo;
 								
 								var dataAdapter = new $.jqx.dataAdapter(consumerList);
 								$('#consumerList').jqxGrid({source:dataAdapter});
 								$("#confirmModal2").jqxWindow("close");
 								$("#install").jqxButton({disabled: true});
+								
+								$("#meterForm").jqxWindow("close");
+								$("#confirmModal2").jqxWindow("close");
 							}
 						}
 					});
 				}
+				// for(var i = 0; rows.length>i; i++){
+					// $.ajax({
+						// url: "functions/installMeter.php",
+						// type: "post",
+						// data: {acctNo: data.acctNo, date: $("#dateInstalled").val(), accomplishedBy: $("#accomplishedBy").val()},
+						// success: function(result){
+							// if(result == 1){
+								// consumerList.url = 'sources/getConsumerWo.php?mr='+mrNo;
+								
+								// var dataAdapter = new $.jqx.dataAdapter(consumerList);
+								// $('#consumerList').jqxGrid({source:dataAdapter});
+								// $("#confirmModal2").jqxWindow("close");
+								// $("#install").jqxButton({disabled: true});
+							// }
+						// }
+					// });
+				// }
 			});
 			
 			$("#mrReports").click(function(){
@@ -421,22 +516,23 @@ $include = new includes();
 				var row = $("#consumerList").jqxGrid("getselectedrowindex");
 				var data = $("#consumerList").jqxGrid("getrowdata", row);
 				
-				$.ajax({
-					url: "functions/issueMeter.php",
-					type: "post",
-					data: {cid: data.cid, mReading: $("#mReading").val(), mBrand: $("#mBrand").val(), mClass: $("#mClass").val(), mSerial: $("#mSerial").val(), mERC: $("#mERC").val(), mLabSeal: $("#mLabSeal").val(), mTerminal: $("#mTerminal").val(), multiplier: $("#mMultiplier").val()},
-					success: function(data){
-						if(data == 1){
-							$("#confirmModal").jqxWindow("close");
-							$("#meterForm").jqxWindow("close");
-							consumerList.url = 'sources/getConsumerWo.php?mr='+mrNo;
-							var dataAdapter = new $.jqx.dataAdapter(consumerList);
-							$('#consumerList').jqxGrid({source:dataAdapter});
-							$("#meterForm :input").val("");
-							$("#install").jqxButton({disabled: true});
-						}
-					}
-				});
+				alert("af");
+				// $.ajax({
+					// url: "functions/issueMeter.php",
+					// type: "post",
+					// data: {cid: data.cid, mReading: $("#mReading").val(), mBrand: $("#mBrand").val(), mClass: $("#mClass").val(), mSerial: $("#mSerial").val(), mERC: $("#mERC").val(), mLabSeal: $("#mLabSeal").val(), mTerminal: $("#mTerminal").val(), multiplier: $("#mMultiplier").val()},
+					// success: function(data){
+						// if(data == 1){
+							// $("#confirmModal").jqxWindow("close");
+							// $("#meterForm").jqxWindow("close");
+							// consumerList.url = 'sources/getConsumerWo.php?mr='+mrNo;
+							// var dataAdapter = new $.jqx.dataAdapter(consumerList);
+							// $('#consumerList').jqxGrid({source:dataAdapter});
+							// $("#meterForm :input").val("");
+							// $("#install").jqxButton({disabled: true});
+						// }
+					// }
+				// });
 			});
 			
 			$("#logout").click(function(){
@@ -476,7 +572,7 @@ $include = new includes();
 					<div id = "consumerList"></div>
 				</div>
 			</div>
-	</div>
+		</div>
 		<div id = "confirmModal">
 			<div><img src = "../assets/images/icons/icol16/src/accept.png">CONFIRM</div>
 			<div class = "text-center">
@@ -498,7 +594,7 @@ $include = new includes();
 			</div>
 		</div>
 		<div id = "meterForm">
-			<div><img src = "../assets/images/icons/icol16/src/accept.png"> CONFIRM</div>
+			<div><img src = "../assets/images/icons/icol16/src/accept.png"> Old Meter Details</div>
 			<div>
 				<div id = "consumerData" class = "text-center"></div>
 				<table class = "table table-condensed">
@@ -508,11 +604,11 @@ $include = new includes();
 					</tr>
 					<tr>
 						<td>BRAND</td>
-						<td><input type = "text" id = "mBrand" class = "form-control"></td>
+						<td><div id = "mBrand" class = "form-control"></div></td>
 					</tr>
 					<tr>
 						<td>CLASS/AMPERES</td>
-						<td><input type = "text" id = "mClass" class = "form-control"></td>
+						<td><div id = "mClass" class = "form-control"></div></td>
 					</tr>
 					<tr>
 						<td>SERIAL NO.</td>

@@ -18,7 +18,9 @@
 			// echo $row["munId"];
 			$appId = $row["appId"];
 			$mReading = $mBrand = $mClass = $mSerial = $mERC = $mLabSeal = $mTerminal = $multiplier = "";
-			$meterProfile = $db->query("SELECT *FROM tbl_meter_profile WHERE cid = '".$row["cid"]."' AND appId = '".$row["appId"]."'");
+			$omReading = $omBrand = $omClass = $omSerial = $omERC = $omLabSeal = $omTerminal = $omultiplier = "";
+			$meterProfile = $db->query("SELECT *FROM tbl_meter_profile WHERE cid = '".$row["cid"]."' AND appId = '".$row["appId"]."' AND currentMeter = 1 ORDER BY mid DESC LIMIT 1");
+			$meterProfile1 = $db->query("SELECT *FROM tbl_meter_profile WHERE cid = '".$row["cid"]."' AND appId = '".$row["appId"]."' AND currentMeter = 0 ORDER BY mid DESC LIMIT 1");
 			
 			
 			foreach($db->query("SELECT *FROM tbl_transactions WHERE appId = '$appId' ORDER BY tid DESC LIMIT 1") as $row3){
@@ -34,6 +36,16 @@
 							$mTerminal = $r["mTerminal"];
 							$multiplier = $r["multiplier"];
 						}
+						foreach($meterProfile1 as $r){
+							$omReading = $r["mReading"];
+							$omBrand = $r["mBrand"];
+							$omClass = $r["mClass"];
+							$omSerial = $r["mSerial"];
+							$omERC = $r["mERC"];
+							$omLabSeal = $r["mLabSeal"];
+							$omTerminal = $r["mTerminal"];
+							$omultiplier = $r["multiplier"];
+						}
 						$status = "NOT INSTALLED";
 						if($row3["status"] == 8) $status = "INSTALLED";
 						
@@ -45,6 +57,7 @@
 							"address" => $row["AddressT"],
 							"cid" => $row["cid"],
 							"appId" => $row["appId"],
+							"tid" => $row3["tid"],
 							"mReading" => $mReading,
 							"mBrand" => $mBrand,
 							"mClass" => $mClass,
@@ -52,7 +65,15 @@
 							"mERC" => $mERC,
 							"mLabSeal" => $mLabSeal,
 							"mTerminal" => $mTerminal,
-							"multiplier" => $multiplier);
+							"multiplier" => $multiplier,
+							"omReading" => $omReading,
+							"omBrand" => $omBrand,
+							"omClass" => $omClass,
+							"omSerial" => $omSerial,
+							"omERC" => $omERC,
+							"omLabSeal" => $omLabSeal,
+							"omTerminal" => $omTerminal,
+							"omultiplier" => $omultiplier,);
 						$ctr++;
 					// }
 				// }
@@ -70,7 +91,7 @@
 							WHERE a.cid = '$cid'") as $row){
 
 			$mReading = $mBrand = $mClass = $mSerial = $mERC = $mLabSeal = $mTerminal = $multiplier = "";
-			foreach($db->query("SELECT *FROM tbl_meter_temp WHERE cid = '$cid' AND appId = '".$row["appId"]."'") as $r){
+			foreach($db->query("SELECT *FROM tbl_meter_profile WHERE cid = '$cid' AND appId = '".$row["appId"]."'") as $r){
 				$mReading = $r["mReading"];
 				$mBrand = $r["mBrand"];
 				$mClass = $r["mClass"];

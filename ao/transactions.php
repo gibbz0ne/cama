@@ -155,15 +155,15 @@ $include = new includes();
 						var me = this;
 						var container = $("<div style='margin: 5px;'></div>");
 						container.append("<button id = 'soButton' >Service Order</button>");
-						container.append("<button id = 'submitApp' >Submit</button>");
+						// container.append("<button id = 'submitApp' >Submit</button>");
 						toolbar.append(container);
 						
 						$("#soButton").jqxButton({theme: "main-theme", disabled: true, width: 130});
-						$("#submitApp").jqxButton({theme: "main-theme", disabled: true, width: 130});
+						// $("#submitApp").jqxButton({theme: "main-theme", disabled: true, width: 130});
 
-						$("#submitApp").on("click", function(){
-							$("#submitModal").jqxWindow("open");
-						});
+						// $("#submitApp").on("click", function(){
+							// $("#submitModal").jqxWindow("open");
+						// });
 						
 						$("#soButton").click(function(){
 							$("#soForm").jqxWindow("open");
@@ -238,7 +238,11 @@ $include = new includes();
 						type: "post",
 						data: {appId: appId},
 						success: function(result){
-							console.log(result);
+							if(result == 1){
+								trans_list.url = "sources/noSOlist.php";
+								var serviceOrders = new $.jqx.dataAdapter(trans_list);
+								$("#noso_list").jqxGrid({source:trans_list});
+							}
 						}						
 					})
 				});
@@ -518,10 +522,10 @@ $include = new includes();
 					appId = data.appId;
 					if(data.so == null){
 						$("#soButton").jqxButton({disabled: false});
-						$("#submitApp").jqxButton({disabled: true});
+						// $("#submitApp").jqxButton({disabled: true});
 					} else{
 						$("#soButton").jqxButton({disabled: true});
-						$("#submitApp").jqxButton({disabled: false});
+						// $("#submitApp").jqxButton({disabled: false});
 					}
 				});
 				
@@ -618,9 +622,15 @@ $include = new includes();
 								source: ["NON-BAPA", "BAPA"], theme:'main-theme'
 							});
 							
-							// $("#acceptApp").jqxButton({width: "100%", theme: "main-theme"});
-							// $(".cancelApp").jqxButton({width: "100%", theme: "main-theme"});
-							
+							$("#isTemp").on("change", function(event){
+								if ($('#isTemp').is(':checked'))
+									$("#tempDate").prop("disabled", false);
+								else{
+									$("#tempDate").prop("disabled", true);
+									$("#tempDate").val("");
+								}
+							});
+													
 							$("#addApp").jqxButton({ theme:'main-theme',height:35,width:'100%',disabled:false});
 							$("#canApp").jqxButton({ theme:'main-theme',height:35,width:'100%',disabled:false});
 							
@@ -783,9 +793,9 @@ $include = new includes();
 					height: 150, width:  300, cancelButton: $('#ok'), showCloseButton: true, draggable: false, resizable: false, isModal: true, autoOpen: false, modalOpacity: 0.50,theme:'main-theme'
 				});
 				
-				$("#submitModal").jqxWindow({
-					height: 150, width:  300, cancelButton: $('#cancelA'), showCloseButton: true, draggable: false, resizable: false, isModal: true, autoOpen: false, modalOpacity: 0.50,theme:'main-theme'
-				});
+				// $("#submitModal").jqxWindow({
+					// height: 150, width:  300, cancelButton: $('#cancelA'), showCloseButton: true, draggable: false, resizable: false, isModal: true, autoOpen: false, modalOpacity: 0.50,theme:'main-theme'
+				// });
 				
 				$("#rWindow").jqxWindow({
 					height: 300, width:  600, cancelButton: $('#rcancel'), showCloseButton: true, draggable: false, resizable: false, isModal: true, autoOpen: false, modalOpacity: 0.50,theme:'main-theme'
@@ -1086,7 +1096,7 @@ $include = new includes();
 					<div id = "signGrid"></div>
 				</div>
 			</div>
-			<div id="submitModal">
+			<!--div id="submitModal">
 				<div><img src="../assets/images/icons/icol16/src/accept.png"><b><span style="margin-top:-24; margin-left:3px"> Submit</span></b></div>
 				<div>
 					<h4 class = "text-center">Approve application</h4><br>
@@ -1097,7 +1107,7 @@ $include = new includes();
 						<td><button id = "cancelA" class = "btn btn-danger btn-block">Cancel</button></td>
 					</div>
 				</div>
-			</div>
+			</div-->
 			<div id="signatory">
 				<div><img src="../assets/images/icons/icol16/src/pencil.png"><b><span style="margin-top:-24; margin-left:3px"> Signatories</span></b></div>
 				<div>

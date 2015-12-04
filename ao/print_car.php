@@ -75,9 +75,9 @@ foreach($query5 as $rowS)
 if($query2->rowCount() > 0){
 	foreach($query2 as $row){
 		
-		$query3 = $db->query("SELECT *FROM tbl_consumer_contact WHERE cid = '".$row["cid"]."' AND contactType = '1'");
+		$query3 = $db->query("SELECT *FROM tbl_consumer_contact WHERE cid = '".$row["cid"]."'");
 		$r = $query3->fetch(PDO::FETCH_ASSOC);
-		$contact = $r["contactValue"];
+		$contact = $r["contactNo"];
 		
 		$acctNo = $row["AccountNumber"];
 		$d = explode(" ", $row["appDate"]);

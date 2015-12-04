@@ -28,13 +28,13 @@ $(document).ready(function(){
 	var subData = new $.jqx.dataAdapter(subStations);
 	
 	$("#substation").jqxDropDownList({ 
-		autoDropDownHeight: 200, selectedIndex: 0, width: "92.3%", height: 20, 
+		autoDropDownHeight: 200, selectedIndex: 0, width: "91.5%", height: 20, 
 		source:subData, displayMember: 'subDescription', valueMember: 'subId', theme:'custom-abo-ao'
 	}).unbind("change").on("change", function(){
 		var station = $("#substation").jqxDropDownList("getSelectedItem");
 		feeders.url = "sources/getFeeder.php?subId="+station.value;
 		feederData = new $.jqx.dataAdapter(feeders);
-		$("#feeder").jqxDropDownList({autoDropDownHeight: 200, selectedIndex: 0, width: "92.3%", height: 20, source: feederData, displayMember: "feeder", valueMember: "feederId", theme: "main-theme"});
+		$("#feeder").jqxDropDownList({autoDropDownHeight: 200, selectedIndex: 0, width: "91.5%", height: 20, source: feederData, displayMember: "feeder", valueMember: "feederId", theme: "main-theme"});
 	});
 	
 	var station = $("#substation").jqxDropDownList("getSelectedItem");
@@ -43,7 +43,7 @@ $(document).ready(function(){
 	var feederData = new $.jqx.dataAdapter(feeders);
 	
 	$("#feeder").jqxDropDownList({
-		autoDropDownHeight: true, selectedIndex: 0, width: "92.3%", height: 20, source: feederData, displayMember: "feeder", valueMember: "feederId", theme: "main-theme"
+		autoDropDownHeight: true, selectedIndex: 0, width: "91.5%", height: 20, source: feederData, displayMember: "feeder", valueMember: "feederId", theme: "main-theme"
 	});
 	
 	var entrance = {
@@ -533,13 +533,16 @@ $(document).ready(function(){
 			var selStation = $("#substation").jqxDropDownList("getSelectedItem");
 			var selFeeder = $("#feeder").jqxDropDownList("getSelectedItem");
 			var selType = $("#eType").jqxDropDownList("getSelectedItem");
+			var selClass = $("#mClass").jqxDropDownList("getSelectedItem");
+			var selPhase = $("#phase").jqxDropDownList("getSelectedItem");
+			
 			$.ajax({
 				url: "functions/approveInspection.php",
 				type: "post",
-				data: { pType: selected.value, rating: $("#rating").val(), etype: selType.value, eSize: $("#eSize").val(), wSize: $("#wSize").val(), 
+				data: { cType: $("#cType").val(), pType: selected.value, rating: $("#rating").val(), etype: selType.value, eSize: $("#eSize").val(), wSize: $("#wSize").val(), 
 						servicePole: $("#servicePole").val(), length: $("#length").val(), totalVa: $("#totalVa").val(),
-						meter: $("#meter").val(), mClass: $("#mClass").val(), station: selStation.value, feeder: selFeeder.value,
-						phase: $("#phase").val(), inspectedBy: $("#inspectedBy").val(), iRemarks: $("#iRemarks").val(),
+						meter: $("#meter").val(), mClass: selClass.value, station: selStation.value, feeder: selFeeder.value,
+						phase: selPhase.value, inspectedBy: $("#inspectedBy").val(), iRemarks: $("#iRemarks").val(),
 						date: $("#inspectedDate").val(), appId: data.appId, cid: data.cid, tid: data.tid, 
 				},
 				success: function(data){
@@ -553,6 +556,7 @@ $(document).ready(function(){
 						
 						$("#inspection_list").jqxGrid({source: inspectionData});
 						$("#inspection_list").jqxGrid("clearselection");
+						$("#confirmInspection input").val("");
 					} else{
 						alert(data);
 					}
@@ -560,8 +564,6 @@ $(document).ready(function(){
 			});
 		});
 	});
-		
-	
 	
 	$("#approveApp1").click(function(){
 		var rowindex = $("#inspection_list").jqxGrid("getselectedrowindex");
@@ -595,8 +597,38 @@ $(document).ready(function(){
 	
 	var mainPData = new $.jqx.dataAdapter(mainP);
 	$("#pType").jqxDropDownList({
-		source: mainPData, selectedIndex: 0, autoDropDownHeight: true, height: 20, 
-		displayMember: "protectionDesc", valueMember: "protectionId", width: "92.3%", theme: "main-theme"
+		source: mainPData, selectedIndex: 0, autoDropDownHeight: true, height: 20,
+		displayMember: "protectionDesc", valueMember: "protectionId", width: "91.5%", theme: "main-theme"
+	});
+	
+	var phase = {
+		datatype: "json",
+		dataFields: [
+			{name: "phaseName"}
+		],
+		url: "sources/getPhase.php",
+		async: false
+	}
+	
+	var phaseData = new $.jqx.dataAdapter(phase);
+	$("#phase").jqxDropDownList({
+		source: phaseData, selectedIndex: 0, height: 20, autoDropDownHeight: true, displayMember: "phaseName", 
+		valueMember: "phaseName", theme: "main-theme"
+	})
+	
+	var mClass = {
+		datatype: "json",
+		dataFields: [
+			{name: "className"}
+		],
+		url: "sources/getMClass.php",
+		async: false
+	};
+	
+	var classData = new $.jqx.dataAdapter(mClass);
+	$("#mClass").jqxDropDownList({
+		source: classData, selectedIndex: 0, height: 20, displayMember: "className", 
+		valueMember: "className", theme: "main-theme"
 	});
 	
 	$("#reports").on("click", function(event){

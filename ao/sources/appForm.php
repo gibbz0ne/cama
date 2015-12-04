@@ -89,6 +89,14 @@
 							<div id = "isBapa" name = "isBapa" class = "form-control input-sm"></div>
 			</div>
 		</div>
+		<div class = "row">
+			<div class = "col-sm-6">
+				<input type = "checkbox" id = "isTemp" name = "isTemp" class = "form-control">Temporary
+			</div>
+			<div class = "col-sm-6"><br>
+				<input id = "tempDate" name = "tempDate" class = "form-control input-sm" placeholder = "Month/s" disabled>
+			</div>
+		</div>
 	</div>
     <div style = "margin-top: 10px;" class = "col-sm-6">
         <input id="addApp" type = "button" class = "form-control btn btn-success" value = "Add">

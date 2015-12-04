@@ -34,14 +34,22 @@
 				// if($query2->rowCount() > 0){
 
 					if($row["action"] == 0 && $row["status"] == 7){
-						$update = $db->prepare("UPDATE tbl_transactions SET action = ?, dateApproved = ? WHERE status = ? AND action = ? AND appId = ? AND cid = ?");
-						$update->execute(array(1, date("Y-m-d H:i:s"), 7, 0, $appId, $cid));
-						
-						$insert = $db->prepare("INSERT INTO tbl_transactions (tid, appId, cid, status, processedBy, dateProcessed) VALUES (?, ?, ?, ?, ?, ?)");
-						$insert->execute(array($t, $appId, $cid, 8, $processedBy, date("Y-m-d H:i:s")));
-						
-						$updateWo = $db->prepare("UPDATE tbl_work_order SET accomplishedBy = ?, dateInstalled = ? WHERE appId = ?");
-						$updateWo->execute(array($accomplishedBy, $date, $appId));
+						try{
+							$db->beginTransaction();
+							$update = $db->prepare("UPDATE tbl_transactions SET action = ?, dateApproved = ? WHERE status = ? AND action = ? AND appId = ? AND cid = ?");
+							$update->execute(array(1, date("Y-m-d H:i:s"), 7, 0, $appId, $cid));
+							
+							$insert = $db->prepare("INSERT INTO tbl_transactions (tid, appId, cid, status, processedBy, dateProcessed) VALUES (?, ?, ?, ?, ?, ?)");
+							$insert->execute(array($t, $appId, $cid, 8, $processedBy, date("Y-m-d H:i:s")));
+							
+							$updateWo = $db->prepare("UPDATE tbl_work_order SET accomplishedBy = ?, dateInstalled = ? WHERE appId = ?");
+							$updateWo->execute(array($accomplishedBy, $date, $appId));
+							
+							$db->commit();
+						} catch(PDOException $e){
+							$db->rollBack();
+							echo $e;
+						}
 						
 						//install column in meter profile
 						echo "1";
